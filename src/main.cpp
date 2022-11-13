@@ -13,12 +13,19 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
 {
     void onResult(BLEAdvertisedDevice advertisedDevice) 
     {
+      // String deviceAddress =advertisedDevice.getAddress().c_str();
+      // String deviceManufacturerData = advertisedDevice.getManufacturerData();
+      // String deviceTXPower = advertisedDevice.getTXPower().c_str();
+
       String deviceName = advertisedDevice.getName().c_str();
-      deviceName.trim(); deviceName.replace(" ", "");
+      String deviceManufacturerData = advertisedDevice.getManufacturerData().c_str();
 
       if(deviceName.indexOf("BLE-LOCKER") > -1)
       {
-          Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+          // Serial.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+          Serial.print(deviceName);
+          Serial.print("  -  ");
+          Serial.println(deviceManufacturerData);
       }
     }
 };
@@ -50,7 +57,10 @@ void loop()
   BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
   // Serial.print("Devices found: ");
   // Serial.println(foundDevices.getCount());
-  Serial.println("Scan done!");
+  // Serial.println("Scan done!");
   pBLEScan->clearResults();   // delete results fromBLEScan buffer to release memory
+  
   delay(20);
+
+  // Если данные изменились - меняем состояние светодиода (дверь открыта или закрыта)
 }
