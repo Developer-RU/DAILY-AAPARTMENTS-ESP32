@@ -15,7 +15,7 @@ static BLEScan * pBLEScan;
 
 static String cpuId = "";
 
-static boolean doConnect = false;
+static boolean doConnect = false, doConnectHandset = false;
 static boolean connected = false;
 
 
@@ -38,6 +38,23 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
     {
         String deviceName = advertisedDevice.getName().c_str();
 
+        // Для трубки
+
+        if(deviceName.indexOf("BLE-HANDSET") > -1)
+        { 
+            advertisedDevice.getScan()->stop();
+            pServerAddress = new BLEAddress(advertisedDevice.getAddress());
+            type = advertisedDevice.getAddressType();
+
+            doConnectHandset = true;
+
+            DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+        }
+
+
+
+        // Для замка
+
         if(deviceName.indexOf(DEVICE_NAME) > -1)
         { 
             advertisedDevice.getScan()->stop();
@@ -48,6 +65,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
 
             DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
         }
+
+        
     }
 };
 
@@ -239,7 +258,8 @@ void loop()
     {
         DEBUG.println("Device connecting!");
 
-        if (doConnect == true && newCommand == true)
+
+        if (doConnectHandset == true && newCommand == true)
         {
             if (connectToServer()) 
             {
@@ -250,6 +270,23 @@ void loop()
                 DEBUG.println("We have failed to connect to the server; there is nothin more we will do.");
             }
 
+            doConnectHandset = false;
+            doConnect = false;
+        }
+
+        else if (doConnect == true && newCommand == true)
+        {
+            if (connectToServer()) 
+            {
+                DEBUG.println("We are now connected to the BLE Server.");
+            } 
+            else 
+            {
+                DEBUG.println("We have failed to connect to the server; there is nothin more we will do.");
+            }
+
+
+            doConnectHandset = false;
             doConnect = false;
         }
 
