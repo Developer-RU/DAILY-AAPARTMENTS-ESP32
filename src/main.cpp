@@ -47,6 +47,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
             type = advertisedDevice.getAddressType();
 
             doConnectHandset = true;
+            doConnect = false;
 
             DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
         }
@@ -55,7 +56,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
 
         // Для замка
 
-        if(deviceName.indexOf(DEVICE_NAME) > -1)
+        else if(deviceName.indexOf(DEVICE_NAME) > -1 && doConnectHandset == false)
         { 
             advertisedDevice.getScan()->stop();
             pServerAddress = new BLEAddress(advertisedDevice.getAddress());
@@ -259,7 +260,7 @@ void loop()
         DEBUG.println("Device connecting!");
 
 
-        if (doConnectHandset == true && newCommand == true)
+        if (!connected && doConnectHandset == true && newCommand == true)
         {
             if (connectToServer()) 
             {
@@ -274,7 +275,7 @@ void loop()
             doConnect = false;
         }
 
-        else if (doConnect == true && newCommand == true)
+        else if (!connected && doConnect == true && newCommand == true)
         {
             if (connectToServer()) 
             {
