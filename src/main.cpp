@@ -50,6 +50,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
             doConnect = false;
 
             DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+            
+            return;
         }
 
 
@@ -63,9 +65,14 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
             type = advertisedDevice.getAddressType();
 
             doConnect = true;
+            doConnectHandset = false;
 
             DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
+
+            return;
+
         }
+        else{}
 
         
     }
@@ -260,7 +267,7 @@ void loop()
         DEBUG.println("Device connecting!");
 
 
-        if (!connected && doConnectHandset == true && newCommand == true)
+        if ((doConnect == true || doConnectHandset == true ) && newCommand == true)
         {
             if (connectToServer()) 
             {
@@ -275,21 +282,6 @@ void loop()
             doConnect = false;
         }
 
-        else if (!connected && doConnect == true && newCommand == true)
-        {
-            if (connectToServer()) 
-            {
-                DEBUG.println("We are now connected to the BLE Server.");
-            } 
-            else 
-            {
-                DEBUG.println("We have failed to connect to the server; there is nothin more we will do.");
-            }
-
-
-            doConnectHandset = false;
-            doConnect = false;
-        }
 
         if (connected) 
         {            
@@ -312,6 +304,7 @@ void loop()
 
             pClient->disconnect();
             pBLEScan->erase(pClient->getPeerAddress());
+            ESP.restart();
             
             // pBLEScan->erase(*pServerAddress);
             //BLEDevice::getScan()->erase(pClient->getPeerAddress());
@@ -327,11 +320,12 @@ void loop()
     pBLEScan->clearResults();
 
     connected = false; 
+    doConnectHandset = false;
     doConnect = false;
 
     // ble_deinit();
     
-    DEBUG.println(getAllHeap());
+    //DEBUG.println(getAllHeap());
 
     delay(1500);
 }
