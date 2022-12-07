@@ -22,6 +22,7 @@ static boolean connected = false;
 boolean newCommand = false;
 uint8_t valCommand = 0;
 
+unsigned long timeWateHandset = 0;
 
 /**
  * @brief 
@@ -50,15 +51,18 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
             doConnect = false;
 
             DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
-            
-            return;
+        
+                timeWateHandset = millis();
+//                pBLEScan->stop();
+            //    delay(1500);
+                
         }
 
 
 
         // Для замка
 
-        else if(deviceName.indexOf(DEVICE_NAME) > -1 && doConnectHandset == false)
+        else if(deviceName.indexOf(DEVICE_NAME) > -1 && doConnectHandset == false && timeWateHandset == 0)
         { 
             advertisedDevice.getScan()->stop();
             pServerAddress = new BLEAddress(advertisedDevice.getAddress());
@@ -69,7 +73,7 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks
 
             DEBUG.printf("Advertised Device: %s \n", advertisedDevice.toString().c_str());
 
-            return;
+            //return;
 
         }
         else{}
@@ -322,7 +326,7 @@ void loop()
     connected = false; 
     doConnectHandset = false;
     doConnect = false;
-
+timeWateHandset = 0;
     // ble_deinit();
     
     //DEBUG.println(getAllHeap());
